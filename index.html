@@ -1,0 +1,131 @@
+    <!DOCTYPE html>
+    <html lang="en" >
+
+    <head>
+
+      <meta charset="UTF-8">
+
+      <title>Rick 'n' Morty</title>
+
+      	<link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.min.css'>
+    	<link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.0/css/bootstrap.min.css'>
+		<link rel='stylesheet' href='./assets/css/app.css'>
+
+      	<script> 
+	  		window.console = window.console || function(t) {}; 
+		</script>
+
+      	<script> 
+	  		if (document.location.search.match(/type=embed/gi)) {
+        	window.parent.postMessage("resize", "*");
+      		}
+    	</script>
+
+    </head>
+
+    <body translate="no" >
+      <div id="app" class="container-lg">
+		<div class="intro">
+			<img class="logo" src="./assets/images/logo.png" alt="">
+			<h1>Meet the characters</h1>
+		</div>
+		
+    	<div class="row">    		
+			<div class="searchbox">
+				<p>Looking for:</p>
+				<label for="name">Name of character</label>
+				<input type="text" @keyup="filterIfFinishedTyping($event)" v-model="nameFilter"><br>
+				<p>Are they:</p>
+				<label for="status">Status of character</label>
+				<select v-model="selectedStatusFilter" @change="statusChange($event)">
+					<option v-for="option in statusOptions" :value="option.value">{{option.text}}</option>
+				</select>
+			</div>
+    		<div class="right-content col-sm">
+    			<div class="row">
+    				<div class="col-lg-4" v-for="(item,index) in characters" :key="index">
+    					<div class="profile">
+    						<img :src="item.image" :alt="item.name" :class="item.status === 'Dead' ? 'gray-img' : ''">
+    						<div class="data">
+    							<h3>
+    								<i v-if="item.status === 'Dead'" class="fas fa-skull status-icon"></i>
+    								<i v-else-if="item.status === 'Alive'" class="fas fa-heartbeat status-icon"></i>
+    								<i v-else class="fas fa-question status-icon"></i>
+    								{{item.name}}
+    							</h3>
+    							<ul>
+    								<li><b>Gender:</b> {{item.gender}}.</li>
+    								<li><b>Species:</b> {{item.species}}.</li>
+    								<li><b>Location:</b> {{item.location.name}}.</li>
+    								<li><b>Origin:</b> {{item.origin.name}}.</li>
+    								<li><b>Status:</b> {{item.status}}.</li>
+    							</ul>
+    						</div>
+    					</div>
+    				</div>
+    			</div>
+    		</div>
+
+    	</div>
+
+    </div>
+      <script src='https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.11/vue.min.js'></script>
+          <script id="rendered-js" >
+    new Vue({
+      el: '#app',
+      data: {
+        characters: [],
+        nameFilter: '',
+        selectedStatusFilter: '',
+        statusOptions: [
+        { text: 'All', value: '' },
+        { text: 'Alive', value: 'alive' },
+        { text: 'Dead', value: 'dead' },
+        { text: 'Unknown', value: 'unknown' }],
+
+        filtersApplied: [],
+        timer: null },
+
+		methods:{
+		getData: function(){
+			const apiUrl = 'https://rickandmortyapi.com/api';
+			let filters = this.filtersApplied.join('');
+		
+			fetch(`${apiUrl}/character/?page=1${filters}`)
+			.then(response => response.json())
+			.then(json => this.characters = json.results)
+		},
+		nameChange: function(event){
+			this.deletePreviousFilter('name')
+			let name = `&name=${this.nameFilter}`
+			this.filtersApplied.push(name)
+			this.getData()
+		},
+		filterIfFinishedTyping: function(event){
+			clearTimeout(this.timer)
+			this.timer = setTimeout(() => {
+					this.nameChange(event)
+			}, 1000)
+		},
+		statusChange: function(event){
+			this.deletePreviousFilter('status')
+			let status = `&status=${this.selectedStatusFilter}`
+			this.filtersApplied.push(status)
+			this.getData()
+		},
+		deletePreviousFilter: function(deleteThisFilter){
+			this.filtersApplied.forEach((item,index) => {
+				if(item.includes(deleteThisFilter)){
+					this.filtersApplied.splice(index,1)
+				}
+			})
+		}
+	},
+	created: function(){
+		this.getData()
+	}
+});
+        </script>
+    </body>
+
+    </html>
