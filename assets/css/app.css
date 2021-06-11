@@ -40,12 +40,6 @@
 		background:rgba(1,1,1,0.5);
 		max-height: 300px;
 		border-radius:8px;
-		flex: 0 0 18%;
-		max-width: 18%;
-		position: relative;
-		width: 100%;
-		padding-right: 15px;
-		padding-left: 15px;
 	}
 	.searchbox h1{
     	margin:0 0 40px 0;
@@ -53,8 +47,8 @@
     .searchbox p{
 		color: #cefcc6cb;
 		margin-top: 1vh;
-		margin-bottom: 2vh;
-		font-size: 3.5vh;
+		margin-bottom: 1.4vh;
+		font-size: 3.1vh;
     }
     .searchbox label{
     	width:100%;
